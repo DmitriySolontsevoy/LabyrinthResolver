@@ -1,0 +1,53 @@
+package parser;
+
+import lombok.SneakyThrows;
+
+import java.io.File;
+import java.util.Scanner;
+
+public class InputMazeParser {
+
+    @SneakyThrows
+    public char[][] parseNotWeightedNotOrientedMaze() {
+        var scanner = new Scanner(new File("C:\\Users\\Dima\\IdeaProjects\\MazeSolver\\src\\main\\resources\\maze"));
+        var size = scanner.nextLine().split("\\s");
+
+        var readArray = new char[Integer.parseInt(size[0])][Integer.parseInt(size[1])*3];
+
+        for (int i = 0; i < Integer.parseInt(size[0]); i++) {
+            readArray[i] = scanner.nextLine().toCharArray();
+        }
+
+        var array = new char[Integer.parseInt(size[0])][Integer.parseInt(size[1])];
+
+        for (int i = 0; i < Integer.parseInt(size[0]); i++) {
+            for (int j = 0; j < Integer.parseInt(size[1]); j++) {
+                array[i][j] = readArray[i][j*3];
+            }
+        }
+
+        return array;
+    }
+
+    @SneakyThrows
+    public char[][] parseWeightedNotOrientedMaze() {
+        var scanner = new Scanner(new File("C:\\Users\\Dima\\IdeaProjects\\MazeSolver\\src\\main\\resources\\maze_weighted"));
+        var size = scanner.nextLine().split("\\s");
+
+        var readArray = new char[Integer.parseInt(size[0])*2 - 1][Integer.parseInt(size[1])*6];
+
+        for (int i = 0; i < Integer.parseInt(size[0])*2 - 1; i++) {
+            readArray[i] = scanner.nextLine().toCharArray();
+        }
+
+        var array = new char[Integer.parseInt(size[0])*2 - 1][Integer.parseInt(size[1])*2];
+
+        for (int i = 0; i < Integer.parseInt(size[0])*2 - 1; i++) {
+            for (int j = 0; j < Integer.parseInt(size[1])*2 - 1; j++) {
+                array[i][j] = readArray[i][j*3];
+            }
+        }
+
+        return array;
+    }
+}
