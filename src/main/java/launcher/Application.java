@@ -13,7 +13,6 @@ import pathfinders.greedy.DijkstraBasic;
 import pathfinders.greedy.GreedySearchBasic;
 import pathfinders.greedy.LeeBasic;
 
-import java.util.ArrayList;
 import java.util.function.Function;
 
 @SpringBootApplication
