@@ -7,13 +7,13 @@ import graph.Transition;
 import graph.Vertex;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class LeeBasic implements Function<Graph, ShortestPathDTO> {
+public class LeeBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
 
     @Override
-    public ShortestPathDTO apply(Graph graph) {
+    public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var valueLabels = new HashMap<String, PathLinkDTO>();
         valueLabels.put(graph.getEntranceVertexLabel(), new PathLinkDTO(graph.getEntranceVertexLabel(), 0));
 

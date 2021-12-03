@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,5 +16,10 @@ public class ShortestPathDTO {
 
     public void addCost(Integer additional) {
         cost += additional;
+    }
+
+    public ShortestPathDTO(ShortestPathDTO original) {
+        this.cost = original.cost;
+        this.path = new ArrayList<>(original.path);
     }
 }

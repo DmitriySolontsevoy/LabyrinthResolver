@@ -5,12 +5,12 @@ import dto.ShortestPathDTO;
 import graph.Graph;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
-public class GreedySearchBasic implements Function<Graph, ShortestPathDTO> {
+public class GreedySearchBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
 
     @Override
-    public ShortestPathDTO apply(Graph graph) {
+    public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var valueLabels = new HashMap<String, HeuristicNodeDTO>();
         var openSet = new HashSet<String>();
         openSet.add(graph.getEntranceVertexLabel());

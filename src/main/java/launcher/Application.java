@@ -7,13 +7,15 @@ import graph.Graph;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import parser.InputMazeParser;
+import pathfinders.computational.AnnealingBasic;
+import pathfinders.computational.AntBasic;
 import pathfinders.computational.GeneticBasic;
 import pathfinders.greedy.AStarBasic;
 import pathfinders.greedy.DijkstraBasic;
 import pathfinders.greedy.GreedySearchBasic;
 import pathfinders.greedy.LeeBasic;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 @SpringBootApplication
 public class Application {
@@ -31,12 +33,15 @@ public class Application {
         var greedySearchFunction = new GreedySearchBasic();
         var leeFunction = new LeeBasic();
 
+        var optimalPathCost = 0;
+
+        System.out.println("GREEDY METHODS\n");
         System.out.println("NO-WEIGHT LABYRINTH TRAVERSAL");
 
-        executeAlgorithm(array, graph, "Dijkstra", dijkstraFunction);
-        executeAlgorithm(array, graph, "A*", aStarFunction);
-        executeAlgorithm(array, graph, "Greedy search", greedySearchFunction);
-        executeAlgorithm(array, graph, "Lee", leeFunction);
+        executeAlgorithm(array, graph, "Dijkstra", dijkstraFunction, optimalPathCost);
+        executeAlgorithm(array, graph, "A*", aStarFunction, optimalPathCost);
+        executeAlgorithm(array, graph, "Greedy search", greedySearchFunction, optimalPathCost);
+        executeAlgorithm(array, graph, "Lee", leeFunction, optimalPathCost);
 
         var weightedConverter = new ArrayToWeightedGraphConverter();
 
@@ -45,24 +50,47 @@ public class Application {
 
         System.out.println("\nWEIGHTED LABYRINTH TRAVERSAL");
 
-        executeWeightedAlgorithm(array, graph, "Dijkstra", dijkstraFunction);
-        executeWeightedAlgorithm(array, graph, "A*", aStarFunction);
-        executeWeightedAlgorithm(array, graph, "Greedy search", greedySearchFunction);
-        executeWeightedAlgorithm(array, graph, "Lee", leeFunction);
+        executeWeightedAlgorithm(array, graph, "Dijkstra", dijkstraFunction, optimalPathCost);
+        executeWeightedAlgorithm(array, graph, "A*", aStarFunction, optimalPathCost);
+        executeWeightedAlgorithm(array, graph, "Greedy search", greedySearchFunction, optimalPathCost);
+        executeWeightedAlgorithm(array, graph, "Lee", leeFunction, optimalPathCost);
 
         System.out.println("\nCOMPUTATIONAL INTELLIGENCE METHODS");
 
         var geneticFunction = new GeneticBasic();
+        var antFunction = new AntBasic();
+        var annealingFunction = new AnnealingBasic();
+
+        System.out.println("\nNO-WEIGHT LABYRINTH TRAVERSAL");
 
         array = parser.parseNotWeightedNotOrientedMaze();
         graph = converter.apply(array);
 
-        executeAlgorithm(array, graph, "Genetic", geneticFunction);
+        optimalPathCost = dijkstraFunction.apply(graph, 0).getCost();
+
+        System.out.println("\nOptimal: " + optimalPathCost + "\n");
+
+        executeAlgorithm(array, graph, "Genetic", geneticFunction, optimalPathCost);
+        executeAlgorithm(array, graph, "Ant", antFunction, optimalPathCost);
+        executeAlgorithm(array, graph, "Annealing", annealingFunction, optimalPathCost);
+
+        System.out.println("\nWEIGHTED LABYRINTH TRAVERSAL");
+
+        array = parser.parseWeightedNotOrientedMaze();
+        graph = weightedConverter.apply(array);
+
+        optimalPathCost = dijkstraFunction.apply(graph, 0).getCost();
+
+        System.out.println("\nOptimal: " + optimalPathCost + "\n");
+
+        executeWeightedAlgorithm(array, graph, "Genetic", geneticFunction, optimalPathCost);
+        executeWeightedAlgorithm(array, graph, "Ant", antFunction, optimalPathCost);
+        executeWeightedAlgorithm(array, graph, "Annealing", annealingFunction, optimalPathCost);
     }
 
-    private static void executeAlgorithm(char[][] array, Graph graph, String name, Function<Graph, ShortestPathDTO> method) {
+    private static void executeAlgorithm(char[][] array, Graph graph, String name, BiFunction<Graph, Integer, ShortestPathDTO> method, Integer optimalCost) {
         var startTime = System.nanoTime();
-        var path = method.apply(graph).getPath();
+        var path = method.apply(graph, optimalCost).getPath();
         System.out.printf("\n%s algorithm invocation has finished.\nTime spent: %dns\n", name, System.nanoTime() - startTime);
 
         System.out.println("Shortest path size: " + path.size());
@@ -86,9 +114,9 @@ public class Application {
         }
     }
 
-    private static void executeWeightedAlgorithm(char[][] array, Graph graph, String name, Function<Graph, ShortestPathDTO> method) {
+    private static void executeWeightedAlgorithm(char[][] array, Graph graph, String name, BiFunction<Graph, Integer, ShortestPathDTO> method, Integer optimalCost) {
         var startTime = System.nanoTime();
-        var pathDTO = method.apply(graph);
+        var pathDTO = method.apply(graph, optimalCost);
         System.out.printf("\n%s algorithm invocation has finished.\nTime spent: %dns\n", name, System.nanoTime() - startTime);
 
         System.out.println("Shortest path size: " + pathDTO.getPath().size());

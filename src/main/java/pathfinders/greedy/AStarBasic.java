@@ -6,12 +6,13 @@ import graph.Graph;
 import graph.Transition;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class AStarBasic implements Function<Graph, ShortestPathDTO> {
+public class AStarBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
 
     @Override
-    public ShortestPathDTO apply(Graph graph) {
+    public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var valueLabels = new HashMap<String, HeuristicNodeDTO>();
         var openSet = new HashSet<String>();
 

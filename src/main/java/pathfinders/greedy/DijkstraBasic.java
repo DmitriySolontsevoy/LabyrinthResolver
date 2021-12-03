@@ -6,12 +6,12 @@ import dto.PathLinkDTO;
 import graph.Transition;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
-public class DijkstraBasic implements Function<Graph, ShortestPathDTO> {
+public class DijkstraBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
 
     @Override
-    public ShortestPathDTO apply(Graph graph) {
+    public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var valueLabels = new HashMap<String, PathLinkDTO>();
         valueLabels.put(graph.getEntranceVertexLabel(), new PathLinkDTO(graph.getEntranceVertexLabel(), 0));
 
