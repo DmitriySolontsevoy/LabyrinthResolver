@@ -17,7 +17,7 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
         var temperature = 200;
         var result = generateInitialResult(graph);
 
-        while (temperature > targetTemperature) {
+        while (temperature > targetTemperature && result.getCost() > optimalCost) {
             ShortestPathDTO newResult;
             if (result.getPath().size() > 10) {
                 newResult = tryImprovingResult(result, graph);
@@ -55,20 +55,32 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
     private ShortestPathDTO tryImprovingResult(ShortestPathDTO result, Graph graph) {
         var newResult = new ShortestPathDTO(result);
 
-        var zoomFactor = Double.valueOf(Math.random() * newResult.getPath().size() / 3 + 2).intValue();
-        retryPathFromTo(
-                newResult.getPath().get(zoomFactor),
-                newResult.getPath().get(newResult.getPath().size() - zoomFactor),
+        var intersections = newResult.getPath().stream()
+                .filter(vertex -> graph.getTransitionsByVertexLabel(vertex).size() > 2)
+                .collect(Collectors.toList());
+
+        var seed = Double.valueOf(Math.random() * intersections.size()).intValue();
+        var chosenIntersection = intersections.get(seed);
+        var chosenIndex = newResult.getPath().indexOf(chosenIntersection);
+        var bannedTransition = newResult.getPath().get(newResult.getPath().indexOf(chosenIntersection) + 1);
+
+        var success = retryPathFromTo(
                 newResult,
                 graph,
-                zoomFactor
+                chosenIntersection,
+                chosenIndex,
+                bannedTransition
         );
 
-        return newResult;
+        if (success) {
+            return newResult;
+        } else {
+            return result;
+        }
     }
 
-    private void retryPathFromTo(String entrance, String exit, ShortestPathDTO path, Graph graph, Integer zoomFactor) {
-        for (int i = zoomFactor; i < path.getPath().size() - zoomFactor; i++) {
+    private boolean retryPathFromTo(ShortestPathDTO path, Graph graph, String chosenIntersection, Integer chosenIndex, String bannedTransition) {
+        for (int i = chosenIndex; i < path.getPath().size() - 1; i++) {
             var current = path.getPath().get(i);
             var next = path.getPath().get(i + 1);
             var costOfTransition = graph.getTransitionsByVertexLabel(current).stream()
@@ -79,20 +91,21 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
             path.addCost(-costOfTransition);
         }
 
-        path.getPath().subList(zoomFactor + 1, path.getPath().size() - zoomFactor).clear();
+        path.getPath().subList(chosenIndex + 1, path.getPath().size() - 1).clear();
 
         var visitedMap = new HashMap<String, Integer>();
         for (Vertex vertex : graph.getAllVertices()) {
-            if (path.getPath().contains(vertex.getLabel()) && !vertex.getLabel().equals(exit)) {
+            if (path.getPath().contains(vertex.getLabel()) && !vertex.getLabel().equals(graph.getExitVertexLabel())) {
                 visitedMap.put(vertex.getLabel(), 0);
             } else {
                 visitedMap.put(vertex.getLabel(), -1);
             }
         }
+        visitedMap.put(bannedTransition, 0);
         visitedMap.put(graph.getEntranceVertexLabel(), 0);
 
-        var cursor = entrance;
-        while (!cursor.equals(exit)) {
+        var cursor = chosenIntersection;
+        while (!cursor.equals(graph.getExitVertexLabel())) {
             var possibleTransitions = graph.getTransitionsByVertexLabel(cursor).stream()
                     .filter(transition -> visitedMap.get(transition.getDestination()) < 0)
                     .collect(Collectors.toList());
@@ -100,9 +113,13 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
             if (possibleTransitions.size() < 1) {
                 var resetTo = cursor;
                 var found = false;
-                var pathIterator = path.getPath().size() - zoomFactor - 2;
+                var pathIterator = path.getPath().size() - 2;
 
                 while (!found) {
+                    if (pathIterator < 0) {
+                        return false;
+                    }
+
                     resetTo = path.getPath().get(pathIterator);
                     var possiblePreviousTransitions = graph.getTransitionsByVertexLabel(resetTo).stream()
                             .filter(transition -> visitedMap.get(transition.getDestination()) < 0)
@@ -113,8 +130,8 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
                     pathIterator--;
                 }
 
-                var prevCursor = path.getPath().get(path.getPath().size() - zoomFactor - 2);
-                var backtickCursor = path.getPath().get(path.getPath().size() - zoomFactor - 1);
+                var prevCursor = path.getPath().get(path.getPath().size() - 3);
+                var backtickCursor = path.getPath().get(path.getPath().size() - 2);
                 while (!backtickCursor.equals(resetTo)) {
                     var finalBacktickCursor = backtickCursor;
 
@@ -126,8 +143,8 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
                     path.addCost(-costOfTransition);
                     path.getPath().remove(backtickCursor);
 
-                    prevCursor = path.getPath().get(path.getPath().size() - zoomFactor - 2);
-                    backtickCursor = path.getPath().get(path.getPath().size() - zoomFactor - 1);
+                    prevCursor = path.getPath().get(path.getPath().size() - 3);
+                    backtickCursor = path.getPath().get(path.getPath().size() - 2);
                 }
                 cursor = resetTo;
             } else {
@@ -138,12 +155,14 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
                 cursor = chosenTransition.getDestination();
                 visitedMap.put(cursor, visitedMap.get(cursor) + 1);
 
-                if (!cursor.equals(exit)) {
-                    path.getPath().add(path.getPath().size() - zoomFactor, chosenTransition.getDestination());
+                if (!cursor.equals(graph.getExitVertexLabel())) {
+                    path.getPath().add(path.getPath().size() - 1, chosenTransition.getDestination());
                 }
                 path.addCost(chosenTransition.getWeight());
             }
         }
+
+        return true;
     }
 
     private ShortestPathDTO generateInitialResult(Graph graph) {
