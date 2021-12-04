@@ -32,27 +32,6 @@ public class GreedySearchBasic implements BiFunction<Graph, Integer, ShortestPat
                 continue;
             }
 
-            var bestOfAllTransition = transitions.stream()
-                    .filter(transition -> !closedSet.contains(transition.getDestination()))
-                    .min(Comparator.comparingInt(x -> calculateHeuristics(x.getDestination(), graph.getExitVertexLabel())))
-                    .get();
-
-            if (!closedSet.contains(bestOfAllTransition.getDestination())) {
-                var neighbourParams = new HeuristicNodeDTO();
-                neighbourParams.setParentLabel(currentNodeLabel);
-                neighbourParams.setFromSourceCostValue(valueLabels.get(currentNodeLabel).getFromSourceCostValue() + bestOfAllTransition.getWeight());
-                neighbourParams.setHeuristicGoalDistance(calculateHeuristics(bestOfAllTransition.getDestination(), graph.getExitVertexLabel()));
-
-                valueLabels.put(bestOfAllTransition.getDestination(), neighbourParams);
-
-                openSet.add(bestOfAllTransition.getDestination());
-            }
-
-            if (bestOfAllTransition.getDestination().equals(graph.getExitVertexLabel())) {
-                openSet.clear();
-                break;
-            }
-
             transitions.forEach(transition -> {
                 if (!closedSet.contains(transition.getDestination())) {
                     var neighbourParams = new HeuristicNodeDTO();
@@ -65,6 +44,15 @@ public class GreedySearchBasic implements BiFunction<Graph, Integer, ShortestPat
                     openSet.add(transition.getDestination());
                 }
             });
+
+            var bestOfAllTransition = transitions.stream()
+                    .filter(transition -> !closedSet.contains(transition.getDestination()))
+                    .min(Comparator.comparingInt(x -> calculateHeuristics(x.getDestination(), graph.getExitVertexLabel())))
+                    .get();
+            if (bestOfAllTransition.getDestination().equals(graph.getExitVertexLabel())) {
+                openSet.clear();
+                break;
+            }
 
             closedSet.add(currentNodeLabel);
         }

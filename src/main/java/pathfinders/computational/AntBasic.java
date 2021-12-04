@@ -15,7 +15,6 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
     public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var a = 1;
         var b = 2;
-        var k = 21;
 
         var pheromoneValues = new HashMap<String, Double>();
         initPheromone(pheromoneValues, graph);
@@ -33,7 +32,7 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
                 }
 
                 for (String vertex : antPath.getPath()) {
-                    pheromoneValues.put(vertex, pheromoneValues.get(vertex) + k/antPath.getCost());
+                    pheromoneValues.put(vertex, pheromoneValues.get(vertex) + optimalCost/antPath.getCost());
                 }
                 antPaths.add(antPath);
             }
@@ -116,32 +115,42 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
                 }
                 ant = resetTo;
             } else {
-                var totalAttraction = 0D;
-                var attractionMap = new HashMap<String, Double>();
-                for (Transition transition : possibleTransitions) {
-                    var cost = Math.pow(pheromoneValues.get(transition.getDestination()), a) + 1 / Math.pow(transition.getWeight(), b);
-                    totalAttraction += cost;
-                    attractionMap.put(transition.getDestination(), totalAttraction);
-                }
-
-                var comparators = attractionMap.entrySet().stream()
-                        .sorted(Comparator.comparingDouble(Map.Entry::getValue))
-                        .collect(Collectors.toList());
-                var seed = Math.random() * totalAttraction;
-
-                for (Map.Entry<String, Double> entry : comparators) {
-                    if (seed <= entry.getValue()) {
-                        ant = entry.getKey();
-                        visitedMap.put(ant, visitedMap.get(ant) + 1);
-                        antPath.getPath().add(ant);
-                        var weight = possibleTransitions.stream()
-                                .filter(transition -> transition.getDestination().equals(entry.getKey()))
-                                .findFirst()
-                                .get()
-                                .getWeight();
-                        antPath.addCost(weight);
-                        break;
+                if (possibleTransitions.size() > 1) {
+                    var totalAttraction = 0D;
+                    var attractionMap = new HashMap<String, Double>();
+                    for (Transition transition : possibleTransitions) {
+                        var cost = Math.pow(pheromoneValues.get(transition.getDestination()), a) + 1 / Math.pow(transition.getWeight(), b);
+                        totalAttraction += cost;
+                        attractionMap.put(transition.getDestination(), totalAttraction);
                     }
+
+                    var comparators = attractionMap.entrySet().stream()
+                            .sorted(Comparator.comparingDouble(Map.Entry::getValue))
+                            .collect(Collectors.toList());
+                    var seed = Math.random() * totalAttraction;
+
+                    for (Map.Entry<String, Double> entry : comparators) {
+                        if (seed <= entry.getValue()) {
+                            ant = entry.getKey();
+                            visitedMap.put(ant, visitedMap.get(ant) + 1);
+                            antPath.getPath().add(ant);
+                            var weight = possibleTransitions.stream()
+                                    .filter(transition -> transition.getDestination().equals(entry.getKey()))
+                                    .findFirst()
+                                    .get()
+                                    .getWeight();
+                            antPath.addCost(weight);
+                            break;
+                        }
+                    }
+                } else {
+                    var transition = possibleTransitions.get(0);
+
+                    ant = transition.getDestination();
+                    visitedMap.put(ant, visitedMap.get(ant) + 1);
+
+                    antPath.getPath().add(ant);
+                    antPath.addCost(transition.getWeight());
                 }
             }
         }

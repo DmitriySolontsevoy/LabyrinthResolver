@@ -162,7 +162,10 @@ public class GeneticBasic implements BiFunction<Graph, Integer, ShortestPathDTO>
                 }
                 cursor = resetTo;
             } else {
-                var seed = Double.valueOf(Math.random() * possibleTransitions.size()).intValue();
+                var seed = 0;
+                if (possibleTransitions.size() > 1) {
+                    seed = Double.valueOf(Math.random() * possibleTransitions.size()).intValue();
+                }
 
                 var chosenTransition = possibleTransitions.get(seed);
 

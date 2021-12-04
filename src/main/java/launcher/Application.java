@@ -33,7 +33,12 @@ public class Application {
         var greedySearchFunction = new GreedySearchBasic();
         var leeFunction = new LeeBasic();
 
-        var optimalPathCost = 0;
+        var optimalPathCost = dijkstraFunction.apply(graph, Integer.MAX_VALUE).getCost();
+
+        dijkstraFunction.apply(graph, optimalPathCost);
+        aStarFunction.apply(graph, optimalPathCost);
+        greedySearchFunction.apply(graph, optimalPathCost);
+        leeFunction.apply(graph, optimalPathCost);
 
         System.out.println("GREEDY METHODS\n");
         System.out.println("NO-WEIGHT LABYRINTH TRAVERSAL");
@@ -50,10 +55,11 @@ public class Application {
 
         System.out.println("\nWEIGHTED LABYRINTH TRAVERSAL");
 
-        executeWeightedAlgorithm(array, graph, "Dijkstra", dijkstraFunction, optimalPathCost);
-        executeWeightedAlgorithm(array, graph, "A*", aStarFunction, optimalPathCost);
-        executeWeightedAlgorithm(array, graph, "Greedy search", greedySearchFunction, optimalPathCost);
-        executeWeightedAlgorithm(array, graph, "Lee", leeFunction, optimalPathCost);
+        //This is a dummy call section
+        executeWeightedAlgorithm(array, graph, "Dijkstra", dijkstraFunction, Integer.MAX_VALUE);
+        executeWeightedAlgorithm(array, graph, "A*", aStarFunction, Integer.MAX_VALUE);
+        executeWeightedAlgorithm(array, graph, "Greedy search", greedySearchFunction, Integer.MAX_VALUE);
+        executeWeightedAlgorithm(array, graph, "Lee", leeFunction, Integer.MAX_VALUE);
 
         System.out.println("\nCOMPUTATIONAL INTELLIGENCE METHODS");
 
@@ -67,6 +73,11 @@ public class Application {
         graph = converter.apply(array);
 
         optimalPathCost = dijkstraFunction.apply(graph, 0).getCost();
+
+        //This is a dummy call section
+        geneticFunction.apply(graph, Integer.MAX_VALUE);
+        antFunction.apply(graph, Integer.MAX_VALUE);
+        annealingFunction.apply(graph, Integer.MAX_VALUE);
 
         executeAlgorithm(array, graph, "Genetic", geneticFunction, optimalPathCost);
         executeAlgorithm(array, graph, "Ant", antFunction, optimalPathCost);

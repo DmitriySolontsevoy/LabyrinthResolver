@@ -9,7 +9,7 @@ public class InputMazeParser {
 
     @SneakyThrows
     public char[][] parseNotWeightedNotOrientedMaze() {
-        var scanner = new Scanner(new File(".\\src\\main\\resources\\maze"));
+        var scanner = new Scanner(new File(".\\src\\main\\resources\\straight_line_maze"));
         var size = scanner.nextLine().split("\\s");
 
         var readArray = new char[Integer.parseInt(size[0])][Integer.parseInt(size[1])*3];
@@ -31,7 +31,7 @@ public class InputMazeParser {
 
     @SneakyThrows
     public char[][] parseWeightedNotOrientedMaze() {
-        var scanner = new Scanner(new File(".\\src\\main\\resources\\maze_weighted"));
+        var scanner = new Scanner(new File(".\\src\\main\\resources\\straight_line_maze_w"));
         var size = scanner.nextLine().split("\\s");
 
         var readArray = new char[Integer.parseInt(size[0])*2 - 1][Integer.parseInt(size[1])*6];

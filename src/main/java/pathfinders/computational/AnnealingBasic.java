@@ -13,11 +13,10 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
 
     @Override
     public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
-        var targetTemperature = 0;
         var temperature = 200;
         var result = generateInitialResult(graph);
 
-        while (temperature > targetTemperature && result.getCost() > optimalCost) {
+        while (temperature > 0 && result.getCost() > optimalCost) {
             ShortestPathDTO newResult;
             if (result.getPath().size() > 10) {
                 newResult = tryImprovingResult(result, graph);
@@ -148,7 +147,10 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
                 }
                 cursor = resetTo;
             } else {
-                var seed = Double.valueOf(Math.random() * possibleTransitions.size()).intValue();
+                var seed = 0;
+                if (possibleTransitions.size() > 1) {
+                    seed = Double.valueOf(Math.random() * possibleTransitions.size()).intValue();
+                }
 
                 var chosenTransition = possibleTransitions.get(seed);
 
@@ -217,7 +219,10 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
                 }
                 cursor = resetTo;
             } else {
-                var seed = Double.valueOf(Math.random() * possibleTransitions.size()).intValue();
+                var seed = 0;
+                if (possibleTransitions.size() > 1) {
+                    seed = Double.valueOf(Math.random() * possibleTransitions.size()).intValue();
+                }
 
                 var chosenTransition = possibleTransitions.get(seed);
 
