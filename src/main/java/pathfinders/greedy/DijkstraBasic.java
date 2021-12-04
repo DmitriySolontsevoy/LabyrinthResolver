@@ -18,11 +18,16 @@ public class DijkstraBasic implements BiFunction<Graph, Integer, ShortestPathDTO
         var settledValueVertices = new HashSet<String>();
 
         while (settledValueVertices.size() < graph.getAllVertices().size()) {
-            var currentNodeLabel = valueLabels.entrySet().stream()
-                    .filter(entry -> !settledValueVertices.contains(entry.getKey()))
-                    .min((vertex, value) -> value.getValue().getValue())
-                    .get()
-                    .getKey();
+            String currentNodeLabel;
+            try {
+                currentNodeLabel = valueLabels.entrySet().stream()
+                        .filter(entry -> !settledValueVertices.contains(entry.getKey()))
+                        .min(Comparator.comparingInt(value -> valueLabels.get(value.getKey()).getValue()))
+                        .get()
+                        .getKey();
+            } catch (Exception e) {
+                break;
+            }
 
             var transitions = graph.getTransitionsByVertexLabel(currentNodeLabel);
 

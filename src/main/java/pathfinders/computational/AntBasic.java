@@ -90,7 +90,10 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
 
                 while (!found) {
                     resetTo = antPath.getPath().get(pathIterator);
-                    if (visitedMap.get(resetTo) < graph.getTransitionsByVertexLabel(resetTo).size() - 2) {
+                    var possiblePreviousTransitions = graph.getTransitionsByVertexLabel(resetTo).stream()
+                            .filter(transition -> visitedMap.get(transition.getDestination()) < 0)
+                            .collect(Collectors.toList());
+                    if (possiblePreviousTransitions.size() > 0) {
                         found = true;
                     }
                     pathIterator--;

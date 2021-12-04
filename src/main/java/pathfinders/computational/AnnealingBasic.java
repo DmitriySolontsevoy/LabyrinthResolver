@@ -103,14 +103,11 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
                 var pathIterator = path.getPath().size() - zoomFactor - 2;
 
                 while (!found) {
-                    try {
-                        resetTo = path.getPath().get(pathIterator);
-                    } catch (Exception e) {
-                        System.out.println(path.getPath());
-                        System.out.println(resetTo);
-                        System.out.println();
-                    }
-                    if (visitedMap.get(resetTo) < graph.getTransitionsByVertexLabel(resetTo).size() - 2) {
+                    resetTo = path.getPath().get(pathIterator);
+                    var possiblePreviousTransitions = graph.getTransitionsByVertexLabel(resetTo).stream()
+                            .filter(transition -> visitedMap.get(transition.getDestination()) < 0)
+                            .collect(Collectors.toList());
+                    if (possiblePreviousTransitions.size() > 0) {
                         found = true;
                     }
                     pathIterator--;
@@ -175,7 +172,10 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
 
                 while (!found) {
                     resetTo = solution.getPath().get(pathIterator);
-                    if (visitedMap.get(resetTo) < graph.getTransitionsByVertexLabel(resetTo).size() - 2) {
+                    var possiblePreviousTransitions = graph.getTransitionsByVertexLabel(resetTo).stream()
+                            .filter(transition -> visitedMap.get(transition.getDestination()) < 0)
+                            .collect(Collectors.toList());
+                    if (possiblePreviousTransitions.size() > 0) {
                         found = true;
                     }
                     pathIterator--;

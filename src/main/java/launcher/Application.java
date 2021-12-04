@@ -68,8 +68,6 @@ public class Application {
 
         optimalPathCost = dijkstraFunction.apply(graph, 0).getCost();
 
-        System.out.println("\nOptimal: " + optimalPathCost + "\n");
-
         executeAlgorithm(array, graph, "Genetic", geneticFunction, optimalPathCost);
         executeAlgorithm(array, graph, "Ant", antFunction, optimalPathCost);
         executeAlgorithm(array, graph, "Annealing", annealingFunction, optimalPathCost);
@@ -80,8 +78,6 @@ public class Application {
         graph = weightedConverter.apply(array);
 
         optimalPathCost = dijkstraFunction.apply(graph, 0).getCost();
-
-        System.out.println("\nOptimal: " + optimalPathCost + "\n");
 
         executeWeightedAlgorithm(array, graph, "Genetic", geneticFunction, optimalPathCost);
         executeWeightedAlgorithm(array, graph, "Ant", antFunction, optimalPathCost);
