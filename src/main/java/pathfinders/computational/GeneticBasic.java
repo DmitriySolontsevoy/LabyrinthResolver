@@ -14,7 +14,7 @@ public class GeneticBasic implements BiFunction<Graph, Integer, ShortestPathDTO>
     public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var initialGeneration = new ArrayList<ShortestPathDTO>();
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 50; i++) {
             var foundBest = tryToAddNewCreatureTo(initialGeneration, graph, optimalCost);
             if (foundBest != null) {
                 return foundBest;
@@ -25,12 +25,12 @@ public class GeneticBasic implements BiFunction<Graph, Integer, ShortestPathDTO>
 
         List<ShortestPathDTO> generation = new ArrayList<>(initialGeneration);
         var numOfGens = 0;
-        while (numOfGens < 15) {
+        while (numOfGens < 35) {
             crossingCycle(generation, graph);
 
             generation = generation.stream()
                     .sorted(Comparator.comparingInt(ShortestPathDTO::getCost))
-                    .limit(15)
+                    .limit(25)
                     .collect(Collectors.toList());
 
             result = generation.stream().min(Comparator.comparingInt(ShortestPathDTO::getCost)).get();
@@ -45,7 +45,7 @@ public class GeneticBasic implements BiFunction<Graph, Integer, ShortestPathDTO>
     }
 
     private void crossingCycle(List<ShortestPathDTO> generation, Graph graph) {
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 25; i++) {
             var seedM = Double.valueOf(Math.random() * generation.size()).intValue();
             var seedF = Double.valueOf(Math.random() * generation.size()).intValue();
 

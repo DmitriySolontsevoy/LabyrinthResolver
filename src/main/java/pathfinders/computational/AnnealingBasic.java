@@ -13,7 +13,7 @@ public class AnnealingBasic implements BiFunction<Graph, Integer, ShortestPathDT
 
     @Override
     public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
-        var temperature = 200;
+        var temperature = 100;
         var result = generateInitialResult(graph);
 
         while (temperature > 0 && result.getCost() > optimalCost) {

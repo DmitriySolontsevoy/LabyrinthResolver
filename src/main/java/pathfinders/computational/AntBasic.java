@@ -22,10 +22,10 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
         ShortestPathDTO result = new ShortestPathDTO(new ArrayList<>(), Integer.MAX_VALUE);
 
         var numberOfIterations = 0;
-        while (numberOfIterations < 10) {
+        while (numberOfIterations < 5) {
             var antPaths = new ArrayList<ShortestPathDTO>();
 
-            for (int i = 0; i < 12; i++) {
+            for (int i = 0; i < 10; i++) {
                 var antPath = newAnt(graph, pheromoneValues, a, b);
                 if (antPath.getCost() <= optimalCost) {
                     return antPath;
@@ -57,7 +57,7 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
     }
 
     private void updatePheromone(HashMap<String, Double> pheromoneValues, Graph graph) {
-        var evaporationRate = 0.95;
+        var evaporationRate = 0.6;
 
         for (Vertex vertex : graph.getAllVertices()) {
             pheromoneValues.put(vertex.getLabel(), pheromoneValues.get(vertex.getLabel()) * evaporationRate);
