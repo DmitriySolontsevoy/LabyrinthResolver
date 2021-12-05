@@ -14,7 +14,7 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
     @Override
     public ShortestPathDTO apply(Graph graph, Integer optimalCost) {
         var a = 1;
-        var b = 2;
+        var b = 3;
 
         var pheromoneValues = new HashMap<String, Double>();
         initPheromone(pheromoneValues, graph);
@@ -57,7 +57,7 @@ public class AntBasic implements BiFunction<Graph, Integer, ShortestPathDTO> {
     }
 
     private void updatePheromone(HashMap<String, Double> pheromoneValues, Graph graph) {
-        var evaporationRate = 0.85;
+        var evaporationRate = 0.95;
 
         for (Vertex vertex : graph.getAllVertices()) {
             pheromoneValues.put(vertex.getLabel(), pheromoneValues.get(vertex.getLabel()) * evaporationRate);

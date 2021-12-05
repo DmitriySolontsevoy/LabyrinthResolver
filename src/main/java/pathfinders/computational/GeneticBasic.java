@@ -102,6 +102,7 @@ public class GeneticBasic implements BiFunction<Graph, Integer, ShortestPathDTO>
                         childSpecimen.addCost(costOfTransition);
                     }
 
+                    removeKnots(childSpecimen, graph);
                     if (childSpecimen.getCost() < paternalSpecimen.getCost() && childSpecimen.getCost() < maternalSpecimen.getCost()) {
                         generation.add(childSpecimen);
                     }
@@ -182,6 +183,44 @@ public class GeneticBasic implements BiFunction<Graph, Integer, ShortestPathDTO>
         } else {
             initialGeneration.add(specimen);
             return null;
+        }
+    }
+
+    private void removeKnots(ShortestPathDTO result, Graph graph) {
+        var knotDetected = true;
+
+        while (knotDetected) {
+            var checkList = new LinkedHashSet<String>();
+
+            for (int i = 0; i < result.getPath().size(); i++) {
+                var element = result.getPath().get(i);
+                if (!checkList.add(element)) {
+                    var knotStart = result.getPath().get(new ArrayList<>(checkList).indexOf(element));
+                    var knotEnd = element;
+
+                    var prevCursor = result.getPath().get(i - 1);
+                    var backtickCursor = element;
+                    while (!backtickCursor.equals(knotStart)) {
+                        var finalBacktickCursor = backtickCursor;
+                        var costOfTransition = graph.getTransitionsByVertexLabel(prevCursor).stream()
+                                .filter(x -> x.getDestination().equals(finalBacktickCursor))
+                                .findFirst()
+                                .get()
+                                .getWeight();
+                        result.addCost(-costOfTransition);
+                        result.getPath().remove(backtickCursor);
+
+                        i--;
+
+                        prevCursor = result.getPath().get(i - 1);
+                        backtickCursor = result.getPath().get(i);
+                    }
+
+                    break;
+                }
+            }
+
+            knotDetected = false;
         }
     }
 }

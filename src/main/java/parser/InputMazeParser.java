@@ -9,7 +9,15 @@ public class InputMazeParser {
 
     @SneakyThrows
     public char[][] parseNotWeightedNotOrientedMaze() {
-        var scanner = new Scanner(new File(".\\src\\main\\resources\\straight_line_maze"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\_maze_large"));
+
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\straight_line_maze"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\open_field_maze"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\two_rooms_maze"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\net_trap_maze"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\snowflake_maze"));
+        var scanner = new Scanner(new File(".\\src\\main\\resources\\pillar_room_maze"));
+
         var size = scanner.nextLine().split("\\s");
 
         var readArray = new char[Integer.parseInt(size[0])][Integer.parseInt(size[1])*3];
@@ -31,7 +39,12 @@ public class InputMazeParser {
 
     @SneakyThrows
     public char[][] parseWeightedNotOrientedMaze() {
-        var scanner = new Scanner(new File(".\\src\\main\\resources\\straight_line_maze_w"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\straight_line_maze_w"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\open_field_maze_w"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\two_rooms_maze_w"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\net_trap_maze_w"));
+//        var scanner = new Scanner(new File(".\\src\\main\\resources\\snowflake_maze_w"));
+        var scanner = new Scanner(new File(".\\src\\main\\resources\\pillar_room_maze_w"));
         var size = scanner.nextLine().split("\\s");
 
         var readArray = new char[Integer.parseInt(size[0])*2 - 1][Integer.parseInt(size[1])*6];
